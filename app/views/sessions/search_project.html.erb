@@ -1,0 +1,17 @@
+<h3> Your projects under the selected category </h3>
+<html>
+<body>
+  <table border=1>
+    <tr id="headers">
+     <th>Title</th>
+     <th>Author</th>
+     </tr>
+          <% for item in Assignment.where(:user_id => current_user.id, :type_id => session[:searchCategory])  do%>
+          <tr>      <td><%=(item.name) %></td>
+                  <td> <%= (current_user.username) %> </td>
+                  </tr>
+                          <% end %>
+
+  </table>
+  <html>
+  <div>

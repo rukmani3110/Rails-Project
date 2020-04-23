@@ -1,0 +1,76 @@
+
+<%= button_to "Logout", '/logout', method: :delete%>
+
+<% if logged_in? %>
+    <h3>Here are your projects, <%= current_user.username.slice(0,1).capitalize + current_user.username.slice(1..-1) %></h3>
+<%end%>
+<style type="text/css">
+  .root input[type=submit], .root input[type=select]{
+      background-color: dodgerBlue; /* Green */
+      border: none;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+    }
+
+    </style>
+
+  <div class="root">
+  <div id="div1">
+<%= form_tag(:controller => "sessions", :action => "search_project", :method => "post", :class => "nifty_form") do %>
+    <%= label_tag :searchCategory, 'Search by Category' %>
+          <%= select_tag(:searchCategory,  options_for_select([['All',0],['Programming', 1], ['Law', 2],  ['General', 3], ['Others', 4]], session[:type_id]),:id=>"categoryOpts", :onchange=>"this.form.submit()") %>
+<% end %>
+
+        </div>
+<br>
+        <div id="div2">
+        <%= form_tag(:controller => "sessions", :action => "search_project_by_name", :method => "post", :class => "nifty_form") do %>
+  <%= submit_tag "Search" %>
+                <%= text_field_tag :searchName, params[:searchName] %>
+
+          <% end %>
+          </div>
+  <br>
+
+
+<table border=1>
+  <tr id="headers">
+   <th>Title</th>
+   <th>Author</th>
+   </tr>
+    <%if session[:type_id] == 0 %>
+
+    <% for item in Assignment.where(:user_id => current_user.id).where('name LIKE ?', "%#{session[:searchName]}%")  do%>
+    <tr>      <td><%=(item.name) %></td>
+            <td> <%= (current_user.username) %> </td>
+            </tr>
+                    <% end %>
+    <%else %>
+
+        <% for item in Assignment.where(:user_id => current_user.id,:type_id => session[:type_id]).where('name LIKE ?', "%#{session[:searchName]}%")  do%>
+        <tr>      <td><%=(item.name) %></td>
+                <td> <%= (current_user.username) %> </td>
+                </tr>
+                        <% end %>
+<%end %>
+</table>
+<br>
+<%= form_tag(:controller => "sessions", :action => "add_project", :method => "post", :class => "nifty_form") do %>
+<fieldset style="width:0px">
+  <legend>Add Projects!</legend>
+  <div>
+    <%= label_tag :name, 'Name' %>
+      <%= text_field_tag :name, params[:name] %>
+      <%= label_tag :category, 'Category' %>
+      <%= select_tag(:category,  options_for_select([['Programming', 1], ['Law', 2],  ['General', 3], ['Others', 4]], 3)) %>
+    </div>
+    <br>
+    <div>
+      <%= submit_tag "Add Project" %>
+    </div>
+</fieldset>
+<% end %>
+</div>
